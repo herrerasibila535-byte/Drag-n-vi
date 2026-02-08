@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>DB OMNI-ARCHIVE: Hybrid Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@300;400;700;900&family=Fira+Code:wght@300;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root {
+    --bg: #050508;
+    --primary: #ffd166;
+    --accent: #00d2d3;
+    --danger: #ff4757;
+    --glass: rgba(15, 15, 25, 0.7);
+    --border: rgba(255, 255, 255, 0.1);
+    --font-header: 'Russo One', sans-serif;
+    --font-main: 'Inter', sans-serif;
+    --font-tech: 'Fira Code', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--bg);
+    color: #fff;
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* --- FONDO TECNOLÓGICO --- */
+.grid-bg {
+    position: fixed; inset: 0; z-index: -1;
+    background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+.glow-overlay {
+    position: fixed; inset: 0; z-index: -1;
+    background: radial-gradient(circle at 50% -20%, rgba(255, 209, 102, 0.1), transparent 70%);
+}
+
+/* --- HERO SECTION (CINEMATIC) --- */
+.hero {
+    height: 85vh;
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+    padding: 0 5% 5rem;
+    overflow: hidden;
+}
+#heroMedia {
+    position: absolute; inset: 0; z-index: -1;
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.5; transition: 1s ease;
+    mask-image: linear-gradient(to bottom, black 40%, transparent 95%);
+}
+.hero-content { max-width: 800px; z-index: 10; }
+.hero-title {
+    font-family: var(--font-header);
+    font-size: clamp(3rem, 12vw, 7rem);
+    line-height: 0.85;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    font-style: italic;
+    background: linear-gradient(to bottom, #fff, #888);
+    -webkit-background-clip: text; color: transparent;
+}
+
+/* --- CONTROLES Y BUSCADOR --- */
+.search-hub {
+    padding: 2rem 5%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    background: linear-gradient(to bottom, transparent, var(--bg));
+}
+input, select {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    padding: 1rem; border-radius: 12px;
+    color: #fff; outline: none; transition: 0.3s;
+    backdrop-filter: blur(10px);
+}
+input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(255,209,102,0.2); }
+
+/* --- SECCIÓN PERSONAJES (CÍRCULOS) --- */
+.section-label {
+    padding: 0 5%; font-weight: 800; color: var(--primary);
+    letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 1rem;
+}
+.scroll-x {
+    display: flex; gap: 1.5rem; overflow-x: auto;
+    padding: 0 5% 2rem; scrollbar-width: none;
+}
+.scroll-x::-webkit-scrollbar { display: none; }
+
+.char-node {
+    flex: 0 0 auto; text-align: center; cursor: pointer; transition: 0.3s;
+}
+.char-node .ring {
+    width: 90px; height: 90px; border-radius: 50%;
+    border: 2px solid var(--border); padding: 4px; transition: 0.3s;
+}
+.char-node:hover .ring, .char-node.active .ring {
+    border-color: var(--primary); transform: scale(1.1);
+    box-shadow: 0 0 15px var(--primary);
+}
+.char-node img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.char-node span { display: block; font-size: 0.7rem; margin-top: 8px; font-weight: bold; }
+
+/* --- CARDS TIPO NETFLIX --- */
+.media-grid {
+    display: flex; gap: 1rem; padding: 0 5% 3rem; overflow-x: auto;
+}
+.netflix-card {
+    min-width: 260px; height: 150px; border-radius: 12px;
+    position: relative; overflow: hidden; border: 1px solid var(--border);
+    cursor: pointer; transition: 0.4s;
+}
+.netflix-card:hover { transform: scale(1.05); border-color: #fff; z-index: 5; }
+.netflix-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+.netflix-card .info {
+    position: absolute; bottom: 0; padding: 10px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    width: 100%; font-size: 0.8rem;
+}
+
+/* --- ÁRBOL DE DATOS FANDOM --- */
+.wiki-tree {
+    margin: 2rem 5%; background: var(--glass);
+    border: 1px solid var(--border); border-radius: 20px; padding: 2rem;
+}
+.node-item { margin-bottom: 10px; border-left: 1px solid var(--border); padding-left: 15px; }
+.node-trigger {
+    cursor: pointer; font-family: var(--font-tech);
+    padding: 10px; border-radius: 5px; display: flex; justify-content: space-between;
+}
+.node-trigger:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
+.node-content { max-height: 0; overflow: hidden; transition: 0.4s ease; font-size: 0.9rem; color: #aaa; }
+.node-item.open > .node-content { max-height: 500px; padding: 10px 0; }
+.node-item.highlight { border-left-color: var(--primary); background: rgba(255,209,102,0.05); }
+
+/* --- CRONISTA (IA NARRATIVA) --- */
+#narrator {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 600px; background: rgba(0,0,0,0.9);
+    border: 1px solid var(--primary); padding: 1.5rem; border-radius: 15px;
+    display: flex; gap: 1rem; align-items: center; z-index: 1000;
+    opacity: 0; pointer-events: none; transition: 0.5s;
+}
+#narrator.active { opacity: 1; pointer-events: all; }
+.ia-icon { color: var(--primary); animation: pulse 2s infinite; }
+.ia-text { font-family: var(--font-tech); font-size: 0.85rem; color: var(--primary); }
+
+/* --- MODO CORRUPCIÓN --- */
+body.corrupt { animation: glitch 0.3s infinite; filter: hue-rotate(90deg) contrast(1.5); }
+@keyframes glitch {
+    0% { transform: translate(0); }
+    33% { transform: translate(-5px, 2px); }
+    66% { transform: translate(5px, -2px); }
+}
+
+@keyframes pulse { 50% { opacity: 0.3; } }
+.hidden { display: none !important; }
+
+@media (max-width: 768px) {
+    .search-hub { grid-template-columns: 1fr; }
+    .hero { height: 60vh; }
+}
+</style>
+</head>
+<body onkeydown="if(event.key.toLowerCase()==='s') exportArchive()">
+
+<div class="grid-bg"></div>
+<div class="glow-overlay"></div>
+
+<div id="narrator">
+    <div class="ia-icon"><i data-lucide="scroll-text"></i></div>
+    <div class="ia-text" id="iaText">Iniciando protocolo de recuperación de memoria...</div>
+</div>
+
+<header class="hero">
+    <img src="" id="heroMedia">
+    <div class="hero-content">
+        <h1 class="hero-title" id="heroTitle">OMNI ARCHIVE</h1>
+        <p id="heroDesc">Selecciona un registro para reconstruir la historia del multiverso.</p>
+    </div>
+</header>
+
+<div class="search-hub">
+    <input type="text" id="mainSearch" placeholder="🔍 Buscar guerrero, técnica o saga..." oninput="liveSearch()">
+    <select id="uniFilter" onchange="changeUniverse()">
+        <option value="ALL">🌌 Multiverso Completo</option>
+        <option value="DB">🐉 Dragon Ball</option>
+        <option value="DBZ">⚡ Dragon Ball Z</option>
+        <option value="DBS">🔥 Dragon Ball Super</option>
+        <option value="GT">⚙️ Dragon Ball GT</option>
+    </select>
+</div>
+
+<div class="section-label">ENTIDADES REGISTRADAS</div>
+<div class="scroll-x" id="charContainer"></div>
+
+<div class="section-label">CONTINUAR EXPLORANDO</div>
+<div class="media-grid" id="mediaContainer"></div>
+
+<div class="section-label">ESTRUCTURA DE DATOS (WIKI)</div>
+<div class="wiki-tree" id="treeContainer"></div>
+
+<div id="readme" class="hidden">
+# OMNI-ARCHIVE HYBRID v5.0
+- Sistema: Híbrido Wiki/Streaming.
+- Motor: Vanilla JS / CSS3.
+- Funciones: Exportación (S), Corrupción (Doble Click), IA Narrativa.
+- Autor: Omni-System.
+</div>
+
+<script>
+// ==========================================
+// BASE DE DATOS INTEGRADA
+// ==========================================
+const MASTER_DB = [
+    {
+        id: "goku",
+        name: "Son Goku",
+        uni: "DBS",
+        desc: "El mortal que alcanzó el reino de los Ángeles. Su Ultra Instinto no es una forma, es un estado de pureza absoluta.",
+        media: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqbmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/12KDixncjK6l7G/giphy.gif",
+        thumb: "https://static.wikia.nocookie.net/dragonball/images/5/5b/Goku_Super_Hero_Artwork.png",
+        tags: ["saiyajin", "ui", "dios"],
+        history: ["Saga de Freezer", "Torneo del Poder", "Saga de Moro"]
+    },
+    {
+        id: "vegeta",
+        name: "Vegeta IV",
+        uni: "DBS",
+        desc: "El Príncipe que abrazó la destrucción. Con el Ultra Ego, convierte el dolor de la batalla en combustible para su Hakai.",
+        media: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqbmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/84CRvhy2DJlwA/giphy.gif",
+        thumb: "https://static.wikia.nocookie.net/dragonball/images/9/93/Vegeta_SSGSS.png",
+        tags: ["príncipe", "ego", "hakai"],
+        history: ["Saga Saiyan", "Saga de Cell", "Granolah el Superviviente"]
+    },
+    {
+        id: "broly",
+        name: "Broly",
+        uni: "DBS",
+        desc: "Poder mutante puro. Su fuerza crece exponencialmente mientras lucha, amenazando la estabilidad de la realidad misma.",
+        media: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqbmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/6fScNHIru6iNmeFj90/giphy.gif",
+        thumb: "https://i.imgur.com/P5x5v8B.png",
+        tags: ["legendario", "ira", "berserker"],
+        history: ["Pelicula Super", "Entrenamiento Vampa"]
+    }
+];
+
+// ==========================================
+// MOTOR LÓGICO
+// ==========================================
+let currentUniverse = "ALL";
+
+function init() {
+    lucide.createIcons();
+    renderAll(MASTER_DB);
+    speak("Cronista Antiguo: He restaurado los archivos. El multiverso está a tu alcance.");
+}
+
+function renderAll(data) {
+    const charCont = document.getElementById('charContainer');
+    const mediaCont = document.getElementById('mediaContainer');
+    const treeCont = document.getElementById('treeContainer');
+    
+    charCont.innerHTML = '';
+    mediaCont.innerHTML = '';
+    treeCont.innerHTML = '';
+
+    data.forEach(item => {
+        // 1. Círculos
+        const circle = document.createElement('div');
+        circle.className = 'char-node';
+        circle.onclick = () => activateHero(item);
+        circle.innerHTML = `<div class="ring"><img src="${item.thumb}"></div><span>${item.name}</span>`;
+        charCont.appendChild(circle);
+
+        // 2. Netflix Cards
+        const card = document.createElement('div');
+        card.className = 'netflix-card';
+        card.onclick = () => activateHero(item);
+        card.innerHTML = `<img src="${item.media}"><div class="info"><b>${item.name}</b><br>${item.uni}</div>`;
+        mediaCont.appendChild(card);
+
+        // 3. Árbol Wiki
+        const node = document.createElement('div');
+        node.className = 'node-item';
+        node.setAttribute('data-search', (item.name + item.tags.join('')).toLowerCase());
+        node.innerHTML = `
+            <div class="node-trigger" onclick="this.parentElement.classList.toggle('open')">
+                <span>📁 ${item.name.toUpperCase()}</span>
+                <i data-lucide="chevron-down"></i>
+            </div>
+            <div class="node-content">
+                <p>${item.desc}</p>
+                <div style="margin-top:10px; color:var(--primary)">Hitos: ${item.history.join(' • ')}</div>
+            </div>
+        `;
+        treeCont.appendChild(node);
+    });
+    lucide.createIcons();
+}
+
+function activateHero(item) {
+    document.getElementById('heroMedia').src = item.media;
+    document.getElementById('heroTitle').innerText = item.name;
+    document.getElementById('heroDesc').innerText = item.desc;
+    speak(`Extrayendo datos de ${item.name}... Línea temporal: ${item.uni}.`);
+}
+
+// BUSCADOR EN VIVO
+function liveSearch() {
+    const q = document.getElementById('mainSearch').value.toLowerCase();
+    const nodes = document.querySelectorAll('.node-item');
+    
+    nodes.forEach(node => {
+        const text = node.getAttribute('data-search');
+        if(text.includes(q)) {
+            node.classList.remove('hidden');
+            if(q.length > 2) node.classList.add('highlight');
+            else node.classList.remove('highlight');
+        } else {
+            node.classList.add('hidden');
+        }
+    });
+}
+
+// CAMBIO DE UNIVERSO + CORRUPCIÓN
+function changeUniverse() {
+    const newUni = document.getElementById('uniFilter').value;
+    if(newUni !== currentUniverse && currentUniverse !== "ALL") {
+        triggerGlitch("⚠️ ERROR CRÍTICO: Cruce de líneas temporales detectado. Realidad inestable.");
+    }
+    currentUniverse = newUni;
+    
+    const filtered = newUni === "ALL" ? MASTER_DB : MASTER_DB.filter(i => i.uni === newUni);
+    renderAll(filtered);
+}
+
+// IA CRONISTA
+function speak(msg) {
+    const box = document.getElementById('narrator');
+    const text = document.getElementById('iaText');
+    box.classList.add('active');
+    text.innerText = '';
+    
+    let i = 0;
+    const type = setInterval(() => {
+        text.innerText += msg[i];
+        i++;
+        if(i >= msg.length) {
+            clearInterval(type);
+            setTimeout(() => box.classList.remove('active'), 5000);
+        }
+    }, 30);
+}
+
+// EFECTO CORRUPCIÓN
+function triggerGlitch(msg) {
+    document.body.classList.add('corrupt');
+    speak(msg);
+    setTimeout(() => document.body.classList.remove('corrupt'), 2000);
+}
+
+// EXPORTACIÓN DE ARCHIVO (Tecla S)
+function exportArchive() {
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'OMNI_ARCHIVE_EXPORT.html';
+    a.click();
+    speak("💾 Sistema: Clonando núcleo del archivo. Descarga iniciada.");
+}
+
+// DOBLE CLICK CORRUPCIÓN
+document.addEventListener('dblclick', () => triggerGlitch("⚠️ MANUAL OVERRIDE: Corrompiendo base de datos por orden del usuario..."));
+
+window.onload = init;
+</script>
+</body>
+</html>
